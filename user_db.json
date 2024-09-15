@@ -1,0 +1,97 @@
+[
+    {
+        "steamid": 76561197960277619,
+        "personaname": "Potajito",
+        "profileurl": "https://steamcommunity.com/id/potajito/",
+        "avatar": "https://avatars.steamstatic.com/5855f31360181e246587d06c971aa569a7c0b1c1.jpg",
+        "last_game_played": 1924180,
+        "last_game_played_name": "Phantom Spark",
+        "last_playtime": 1726436180,
+        "games": {
+            "646910": {
+                "appid": 646910,
+                "name": "The Crew 2",
+                "playtime_2weeks": 157,
+                "playtime_forever": 100,
+                "img_icon_url": "c627b2fa24d61b4042afbd2b183f49b9ca59bc45",
+                "playtime_windows_forever": 0,
+                "playtime_mac_forever": 0,
+                "playtime_linux_forever": 157,
+                "playtime_deck_forever": 0,
+                "last_playtime": 1726054085
+            },
+            "1422450": {
+                "appid": 1422450,
+                "name": "Deadlock",
+                "playtime_2weeks": 46,
+                "playtime_forever": 1327,
+                "img_icon_url": "f6da1420a173324d49bcd470fa3eee781ad0fa5e",
+                "playtime_windows_forever": 0,
+                "playtime_mac_forever": 0,
+                "playtime_linux_forever": 1327,
+                "playtime_deck_forever": 0,
+                "last_playtime": 1725314464
+            },
+            "1201270": {
+                "appid": 1201270,
+                "name": "A Space for the Unbound",
+                "playtime_2weeks": 15,
+                "playtime_forever": 15,
+                "img_icon_url": "e267de500ad0a05566020f2ae7b219fc709b8d70",
+                "playtime_windows_forever": 0,
+                "playtime_mac_forever": 0,
+                "playtime_linux_forever": 15,
+                "playtime_deck_forever": 13,
+                "last_playtime": 1725720372
+            },
+            "1924180": {
+                "appid": 1924180,
+                "name": "Phantom Spark",
+                "playtime_2weeks": 11,
+                "playtime_forever": 160,
+                "img_icon_url": "3720409759a6abbaa6e61c719acc23d6e6bf32ba",
+                "playtime_windows_forever": 0,
+                "playtime_mac_forever": 0,
+                "playtime_linux_forever": 153,
+                "playtime_deck_forever": 52,
+                "last_playtime": 1726436180
+            },
+            "1098770": {
+                "appid": 1098770,
+                "name": "The Crimson Diamond",
+                "playtime_2weeks": 10,
+                "playtime_forever": 39,
+                "img_icon_url": "32d8149dbaf9d8362956b5a5bcf25f8e7f99678d",
+                "playtime_windows_forever": 0,
+                "playtime_mac_forever": 0,
+                "playtime_linux_forever": 39,
+                "playtime_deck_forever": 0,
+                "last_playtime": 1726176567
+            },
+            "3101950": {
+                "appid": 3101950,
+                "name": "Temtem: Swarm Playtest",
+                "playtime_2weeks": 8,
+                "playtime_forever": 8,
+                "img_icon_url": "6bde295b87cad30b3da4284d7179df307345f37d",
+                "playtime_windows_forever": 0,
+                "playtime_mac_forever": 0,
+                "playtime_linux_forever": 8,
+                "playtime_deck_forever": 0,
+                "last_playtime": 1726174640
+            },
+            "2933130": {
+                "appid": 2933130,
+                "name": "The Lord of the Rings: Return to Moria\u2122",
+                "playtime_2weeks": 2,
+                "playtime_forever": 2,
+                "img_icon_url": "29286f2af71b4c1752abf62428e2b60761f7e69a",
+                "playtime_windows_forever": 0,
+                "playtime_mac_forever": 0,
+                "playtime_linux_forever": 2,
+                "playtime_deck_forever": 0,
+                "last_playtime": 1725548536
+            }
+        }
+    }
+]
