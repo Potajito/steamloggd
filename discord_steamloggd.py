@@ -93,11 +93,11 @@ def run_discord_bot(api: WebAPI) -> None:
     async def add_user(interaction: discord.Interaction, user_input_api_key: str, user_url: str):
         
         try:
-            steam_user: SteamUser = get_user(api,user_url,user_input_api_key)
+            steam_user: SteamUser = get_user(api,user_url.strip(),user_input_api_key.strip())
             await interaction.response.send_message("¡Añadido!", ephemeral=True)
         except APIKeyNotValid:
-            log.error(f"API Key {user_input_api_key} not supported!")
-            await interaction.response.send_message("Error 1: API Key not supported!", ephemeral=True)
+            log.error(f"Error 1: on API Key {user_input_api_key} or URL {user_url}!")
+            await interaction.response.send_message("Error on API Key or URL!", ephemeral=True)
             return
                                     
         
@@ -105,7 +105,7 @@ def run_discord_bot(api: WebAPI) -> None:
         #log.info (f"New user list: {}")
 
         if not steam_user:
-            await interaction.response.send_message("Error 2: API Key not supported!", ephemeral=True)
+            await interaction.response.send_message("Error 2: on API Key {user_input_api_key} or URL {user_url}!", ephemeral=True)
             return
     
     @tree.command(guild=discord.Object(id=GUILD_ID), name='sync_steam', description='Sync bot (dev)')  # guild specific
