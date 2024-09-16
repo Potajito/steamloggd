@@ -6,6 +6,7 @@ class SteamUser:
     steamid: int
     personaname: str
     profileurl: str
+    api_key: str
     avatar: str
     last_game_played: int
     last_game_played_name: str
