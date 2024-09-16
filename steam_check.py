@@ -1,9 +1,13 @@
 import logging, os
-from typing import Dict
 from rich.logging import RichHandler
 from rich.traceback import install
-import json
 from dotenv import load_dotenv
+
+from typing import Dict
+import json
+
+from cryptography.fernet import Fernet
+from encryption import encrypt_api_key, decrypt_api_key
 
 load_dotenv()
 
@@ -27,11 +31,12 @@ def init_steam_user (user_summary_json: str, user_recently_played_json) -> Steam
         int(game['appid']): game  # Converts the appid to an integer
         for game in user_recently_played_json['response']['games']
     }
+    ## New user
     user = SteamUser(
         steamid= int(user_summary_json["response"]["players"][0]["steamid"]),
         personaname=user_summary_json["response"]["players"][0]["personaname"],
         profileurl=user_summary_json["response"]["players"][0]["profileurl"],
-        api_key=MY_API_KEY,
+        api_key=encrypt_api_key(MY_API_KEY),
         avatar=user_summary_json["response"]["players"][0]["avatar"],
         last_game_played=0,
         last_game_played_name="",
@@ -46,6 +51,10 @@ def init_steam_user (user_summary_json: str, user_recently_played_json) -> Steam
             if user.steamid not in app_ids_set:
                 log.info (f"New user detected: {user.personaname}")
                 user_db.append(user.to_dict())
+                # Write back the updated list after adding a new user
+                f.seek(0)  # Move file pointer to the start of the file
+                json.dump(user_db, f, indent=4)
+                f.truncate()  # In case the new data is smaller than the original
             else:
                 log.info (f"Returning user: {user.personaname}")
     except FileNotFoundError:
@@ -55,6 +64,7 @@ def init_steam_user (user_summary_json: str, user_recently_played_json) -> Steam
             user_db:list[dict]
             user_db.append(user.to_dict())
             json.dump(user_db, f, indent=4)
+            
     return user
 
 def load_user_db() -> Dict[str, SteamUser]:
@@ -76,7 +86,7 @@ def load_user_db() -> Dict[str, SteamUser]:
                 steamid=steamid,
                 personaname=user_data['personaname'],
                 profileurl=user_data['profileurl'],
-                api_key=MY_API_KEY,
+                api_key=encrypt_api_key(MY_API_KEY),
                 avatar=user_data['avatar'],
                 last_game_played=user_data['last_game_played'],
                 last_game_played_name=user_data['last_game_played_name'],
@@ -126,7 +136,7 @@ def check_latest_played_games (user: SteamUser, user_recently_played_json: dict,
     for game in user_recently_played_json["response"]["games"]:
         last_games_played.append(game["appid"])
         if game["appid"] in games_dict:
-            log.info (f"{user.personaname} has played {game['name']}")
+            log.debug (f"{user.personaname} has played {game['name']}")
             # Init "last_playtime" key if not present
             if 'last_playtime' not in user_db[user.steamid].games.get(game['appid']):
                 if user.last_playtime < games_dict[game["appid"]]["last_playtime"]:
@@ -156,6 +166,6 @@ def check_latest_played_games (user: SteamUser, user_recently_played_json: dict,
             
     log.info (f"Last game played: {user_db[user.steamid].last_game_played_name}")
     if has_played:
-        log.info (f"Last session playtime: {last_playtime_session} minutes")
+        log.info (f"Last session playtime: {last_playtime_session} minutes for user {user.personaname}")
     else:
-        log.info ("All sessions logged.")
+        log.info (f"All sessions logged for user {user.personaname}")

@@ -6,7 +6,7 @@ load_dotenv()
 #.ENVS
 
 if os.getenv("LOGLEVEL") is None:
-    LOGLEVEL=logging.INFO
+    LOGLEVEL=logging.DEBUG
 else:
     LOGLEVEL = int(os.getenv("LOGLEVEL"))
     ### LOGLEVELS
@@ -24,3 +24,7 @@ HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
     'Accept-Language': 'en-US,en;q=0.9'
 }
+
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN_ENV")
+GUILD_ID = os.getenv("GUILD_ID") # string
+CHANNEL_ID = os.getenv("CHANNEL_ID") # int

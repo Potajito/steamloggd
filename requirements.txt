@@ -3,3 +3,5 @@ requests
 python-dotenv
 beautifulsoup4
 steam
+cryptography
+discord

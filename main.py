@@ -11,7 +11,7 @@ from steam_check import init_steam_user, check_latest_played_games
 from steam.webapi import WebAPI
 
 from dotenv import load_dotenv
-
+from discord_steamloggd import run_discord_bot
 load_dotenv()
 
 MY_API_KEY = os.getenv("MY_API_KEY")
@@ -30,24 +30,21 @@ else:
 
 
 def main ():
-    print ("***")
+
     api = WebAPI(key=MY_API_KEY)
-    
+    run_discord_bot(api)
     #recently_played = api.call('IPlayerService.GetRecentlyPlayedGames', steamid='76561197960277619', count=0)
     #user_summary = api.call('ISteamUser.GetPlayerSummaries', steamids='76561197960277619')
+    
     user_summary_json = api.call('ISteamUser.GetPlayerSummaries',
                                  steamids='76561197960277619')
     user_recently_played_json = api.call('IPlayerService.GetRecentlyPlayedGames',
                                          steamid='76561197960277619', count=0)
-    response = requests.get("https://api.steampowered.com/IPlayerService/ClientGetLastPlayedTimes/v1/?key=4B7D4B9B79B961A1698F1E2FBAD000E2")
+    response = requests.get(f"https://api.steampowered.com/IPlayerService/ClientGetLastPlayedTimes/v1/?key={MY_API_KEY}")
     user_last_played_times = response.json()
     steam_user = init_steam_user(user_summary_json, user_recently_played_json)
-    #user_last_played_times = api.call('IPlayerService.ClientGetLastPlayedTimes',
-    #                                  steamid='76561197960277619')
-    
     check_latest_played_games(steam_user,user_recently_played_json,
                               user_last_played_times)
-    print (steam_user.personaname)
     
     #api.call('ISteamUser.ResolveVanityURL', vanityurl="valve", url_type=2)
     #api.ISteamUser.ResolveVanityURL(vanityurl="valve", url_type=2)

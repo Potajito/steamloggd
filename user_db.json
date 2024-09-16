@@ -3,16 +3,17 @@
         "steamid": 76561197960277619,
         "personaname": "Potajito",
         "profileurl": "https://steamcommunity.com/id/potajito/",
+        "api_key": "Z0FBQUFBQm02S2h1NWNyRHZwRFhzdE4wZ0JlQ3ZJOXJEbzE5V1d4Q3J3QkhjYVR3Z3NsbXBsblVCaW14RVRKU2pZUFBpUGdlLUV3enNtemhwYTJVZmd4cThBb0ZELXR2VVlmUVJWSGdIMUdPai1Fa1k1Y09YOUxlaDhESHNyMEhVQzVDOV9DRm9yMVk=",
         "avatar": "https://avatars.steamstatic.com/5855f31360181e246587d06c971aa569a7c0b1c1.jpg",
-        "last_game_played": 1924180,
-        "last_game_played_name": "Phantom Spark",
-        "last_playtime": 1726436180,
+        "last_game_played": 1282100,
+        "last_game_played_name": "Remnant II",
+        "last_playtime": 1726522414,
         "games": {
             "646910": {
                 "appid": 646910,
                 "name": "The Crew 2",
                 "playtime_2weeks": 157,
-                "playtime_forever": 100,
+                "playtime_forever": 157,
                 "img_icon_url": "c627b2fa24d61b4042afbd2b183f49b9ca59bc45",
                 "playtime_windows_forever": 0,
                 "playtime_mac_forever": 0,
@@ -20,17 +21,17 @@
                 "playtime_deck_forever": 0,
                 "last_playtime": 1726054085
             },
-            "1422450": {
-                "appid": 1422450,
-                "name": "Deadlock",
-                "playtime_2weeks": 46,
-                "playtime_forever": 1327,
-                "img_icon_url": "f6da1420a173324d49bcd470fa3eee781ad0fa5e",
+            "1924180": {
+                "appid": 1924180,
+                "name": "Phantom Spark",
+                "playtime_2weeks": 18,
+                "playtime_forever": 160,
+                "img_icon_url": "3720409759a6abbaa6e61c719acc23d6e6bf32ba",
                 "playtime_windows_forever": 0,
                 "playtime_mac_forever": 0,
-                "playtime_linux_forever": 1327,
-                "playtime_deck_forever": 0,
-                "last_playtime": 1725314464
+                "playtime_linux_forever": 160,
+                "playtime_deck_forever": 52,
+                "last_playtime": 1726436180
             },
             "1201270": {
                 "appid": 1201270,
@@ -44,18 +45,6 @@
                 "playtime_deck_forever": 13,
                 "last_playtime": 1725720372
             },
-            "1924180": {
-                "appid": 1924180,
-                "name": "Phantom Spark",
-                "playtime_2weeks": 11,
-                "playtime_forever": 160,
-                "img_icon_url": "3720409759a6abbaa6e61c719acc23d6e6bf32ba",
-                "playtime_windows_forever": 0,
-                "playtime_mac_forever": 0,
-                "playtime_linux_forever": 153,
-                "playtime_deck_forever": 52,
-                "last_playtime": 1726436180
-            },
             "1098770": {
                 "appid": 1098770,
                 "name": "The Crimson Diamond",
@@ -67,6 +56,18 @@
                 "playtime_linux_forever": 39,
                 "playtime_deck_forever": 0,
                 "last_playtime": 1726176567
+            },
+            "1422450": {
+                "appid": 1422450,
+                "name": "Deadlock",
+                "playtime_2weeks": 9,
+                "playtime_forever": 1327,
+                "img_icon_url": "f6da1420a173324d49bcd470fa3eee781ad0fa5e",
+                "playtime_windows_forever": 0,
+                "playtime_mac_forever": 0,
+                "playtime_linux_forever": 1327,
+                "playtime_deck_forever": 0,
+                "last_playtime": 1725314464
             },
             "3101950": {
                 "appid": 3101950,
@@ -80,6 +81,18 @@
                 "playtime_deck_forever": 0,
                 "last_playtime": 1726174640
             },
+            "1282100": {
+                "appid": 1282100,
+                "name": "Remnant II",
+                "playtime_2weeks": 6,
+                "playtime_forever": 164,
+                "img_icon_url": "7223e40d6e1d9a25db48cce857d1b83c5f2c5704",
+                "playtime_windows_forever": 0,
+                "playtime_mac_forever": 0,
+                "playtime_linux_forever": 164,
+                "playtime_deck_forever": 0,
+                "last_playtime": 1726522414
+            },
             "2933130": {
                 "appid": 2933130,
                 "name": "The Lord of the Rings: Return to Moria\u2122",
@@ -91,6 +104,26 @@
                 "playtime_linux_forever": 2,
                 "playtime_deck_forever": 0,
                 "last_playtime": 1725548536
+            }
+        }
+    },
+    {
+        "steamid": 76561197995416195,
+        "personaname": "Otro Mono",
+        "profileurl": "https://steamcommunity.com/id/mcejalvo/",
+        "api_key": "Z0FBQUFBQm02S3d3SktIQnBUS3NvTXlsQUlBb3VEcTZtWnAzNElLZENmTVpLRThFblJoS090Q1BzWmZNcTk2R0p2WE15eTFSNnI4U29HV3h4WG9xS2wtX0EwQy1GZkliYzJhM1hGdmw5MXJMQVVJZWMzSzd3YTdfRXJOWER5V2Z6WnRwWGNXMlFtOEM=",
+        "avatar": "https://avatars.steamstatic.com/88e09ff935b7566f0a02cf980db096e13d46183c.jpg",
+        "last_game_played": 526870,
+        "last_game_played_name": "Satisfactory",
+        "last_playtime": 1726518277,
+        "games": {
+            "526870": {
+                "appid": 526870,
+                "name": "Satisfactory",
+                "playtime_2weeks": 2091,
+                "playtime_forever": 6071,
+                "img_icon_url": "ee3406fe5ec813b1987ad67e37e5cd6fb4f620e6",
+                "last_playtime": 1726518277
             }
         }
     }
