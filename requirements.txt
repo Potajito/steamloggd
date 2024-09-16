@@ -5,3 +5,4 @@ beautifulsoup4
 steam
 cryptography
 discord
+igdb-api-v4
