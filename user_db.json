@@ -3,7 +3,9 @@
         "steamid": 76561197960277619,
         "personaname": "Potajito",
         "profileurl": "https://steamcommunity.com/id/potajito/",
-        "api_key": "Z0FBQUFBQm02S2h1NWNyRHZwRFhzdE4wZ0JlQ3ZJOXJEbzE5V1d4Q3J3QkhjYVR3Z3NsbXBsblVCaW14RVRKU2pZUFBpUGdlLUV3enNtemhwYTJVZmd4cThBb0ZELXR2VVlmUVJWSGdIMUdPai1Fa1k1Y09YOUxlaDhESHNyMEhVQzVDOV9DRm9yMVk=",
+        "api_key": "Z0FBQUFBQm02WTh0N0g3UG56Mk1HRDVOVHJZTGZCSTh1SVRxZWNLdEZ2cFg4Rmg0cnM5RnA4VzRuMnBkcFRnQlVMTDJWd2VKUUhrSUp4VDJXX18wZTlNejFzelNMVWhLbGZpNTYtYVdXbWM2VDRCVUlZR3ZLaVZVV2ZpdXp6SjBIN29kb2t6NVBXZTY=",
+        "bl_user": "Potajito",
+        "bl_password": "Z0FBQUFBQm02WTh0NDhFRl9kT2JVVFVPaVRyUnNQS3pPY2xzdnRYQVN5NGgzcUlyZUZxOXFiV0dRY2djek9MRENJTHdqVnc0eC1GTm1QUkhma3NlX0pERHg3WUFPNTQ3VTBNS1QyYktVX05KUlhLbGZIY0lTN3c9",
         "avatar": "https://avatars.steamstatic.com/5855f31360181e246587d06c971aa569a7c0b1c1.jpg",
         "last_game_played": 1282100,
         "last_game_played_name": "Remnant II",
@@ -57,18 +59,6 @@
                 "playtime_deck_forever": 0,
                 "last_playtime": 1726176567
             },
-            "1422450": {
-                "appid": 1422450,
-                "name": "Deadlock",
-                "playtime_2weeks": 9,
-                "playtime_forever": 1327,
-                "img_icon_url": "f6da1420a173324d49bcd470fa3eee781ad0fa5e",
-                "playtime_windows_forever": 0,
-                "playtime_mac_forever": 0,
-                "playtime_linux_forever": 1327,
-                "playtime_deck_forever": 0,
-                "last_playtime": 1725314464
-            },
             "3101950": {
                 "appid": 3101950,
                 "name": "Temtem: Swarm Playtest",
@@ -104,26 +94,6 @@
                 "playtime_linux_forever": 2,
                 "playtime_deck_forever": 0,
                 "last_playtime": 1725548536
-            }
-        }
-    },
-    {
-        "steamid": 76561197995416195,
-        "personaname": "Otro Mono",
-        "profileurl": "https://steamcommunity.com/id/mcejalvo/",
-        "api_key": "Z0FBQUFBQm02S3d3SktIQnBUS3NvTXlsQUlBb3VEcTZtWnAzNElLZENmTVpLRThFblJoS090Q1BzWmZNcTk2R0p2WE15eTFSNnI4U29HV3h4WG9xS2wtX0EwQy1GZkliYzJhM1hGdmw5MXJMQVVJZWMzSzd3YTdfRXJOWER5V2Z6WnRwWGNXMlFtOEM=",
-        "avatar": "https://avatars.steamstatic.com/88e09ff935b7566f0a02cf980db096e13d46183c.jpg",
-        "last_game_played": 526870,
-        "last_game_played_name": "Satisfactory",
-        "last_playtime": 1726518277,
-        "games": {
-            "526870": {
-                "appid": 526870,
-                "name": "Satisfactory",
-                "playtime_2weeks": 2091,
-                "playtime_forever": 6071,
-                "img_icon_url": "ee3406fe5ec813b1987ad67e37e5cd6fb4f620e6",
-                "last_playtime": 1726518277
             }
         }
     }

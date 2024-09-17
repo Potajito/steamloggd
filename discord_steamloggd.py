@@ -90,13 +90,20 @@ def run_discord_bot(api: WebAPI) -> None:
     
     tree = client.tree
     @tree.command(guild=discord.Object(id=GUILD_ID), name='add_steam_user', description='Add Steam User')  # guild specific
-    async def add_user(interaction: discord.Interaction, user_input_api_key: str, user_url: str):
+    async def add_user(interaction: discord.Interaction,
+                       user_input_api_key: str,
+                       steam_user_url: str,
+                       backloggd_username_or_email: str,
+                       backloggd_password: str):
         
         try:
-            steam_user: SteamUser = get_user(api,user_url.strip(),user_input_api_key.strip())
+            steam_user: SteamUser = get_user(api,steam_user_url.strip(),
+                                             user_input_api_key.strip(),
+                                             backloggd_username_or_email.strip(),
+                                             backloggd_password)
             await interaction.response.send_message("¡Añadido!", ephemeral=True)
         except APIKeyNotValid:
-            log.error(f"Error 1: on API Key {user_input_api_key} or URL {user_url}!")
+            log.error(f"Error 1: on API Key {user_input_api_key} or URL {steam_user_url}!")
             await interaction.response.send_message("Error on API Key or URL!", ephemeral=True)
             return
                                     
@@ -117,7 +124,10 @@ def run_discord_bot(api: WebAPI) -> None:
     client.run(DISCORD_TOKEN)
     
     
-def get_user(api:WebAPI, user_url:str, user_api_key:str) -> SteamUser:
+def get_user(api:WebAPI, user_url:str,
+             user_api_key:str,
+             bl_user: str,
+             bl_password: str) -> SteamUser:
     vanity_url_match = re.search(r'/id/([^/]+)/?$', user_url)
     if vanity_url_match:
         vanity_url = vanity_url_match.group(1)
@@ -140,7 +150,11 @@ def get_user(api:WebAPI, user_url:str, user_api_key:str) -> SteamUser:
     
     response = requests.get(f"https://api.steampowered.com/IPlayerService/ClientGetLastPlayedTimes/v1/?key={user_api_key}")
     user_last_played_times = response.json()
-    steam_user = init_steam_user(user_summary_json, user_recently_played_json)
+    steam_user = init_steam_user(user_summary_json,
+                                 user_recently_played_json,
+                                 user_api_key,
+                                 bl_user,
+                                 bl_password)
     #user_last_played_times = api.call('IPlayerService.ClientGetLastPlayedTimes',
     #                                  steamid='76561197960277619')
     

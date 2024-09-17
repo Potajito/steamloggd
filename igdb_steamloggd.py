@@ -65,9 +65,6 @@ def decode_api_response(byte_array: bytes) -> list[dict]:
     return response_dict
 
 def steam_id_to_backloggd_url(steam_ids: list[int], wrapper: IGDBWrapper) -> list[str]:
-    #api_endpoint = "https://api.igdb.com/v4/external_games"
-    #body= f'fields game, name; where uid="{str(steam_id)}" & category = 1;'
-    #response = requests.post(api_endpoint, headers=api_headers,data=body)
     backloggd_urls = []
     steam_ids_str = ",".join(f'"{str(id)}"' for id in steam_ids)
     steam_ids_str = f"({steam_ids_str})"
@@ -80,9 +77,7 @@ def steam_id_to_backloggd_url(steam_ids: list[int], wrapper: IGDBWrapper) -> lis
     igdb_game_ids_str = ",".join(map(str, game_list))
     igdb_game_ids_str = f"({igdb_game_ids_str})"
     log.debug(igdb_game_ids_str)
-    ## Get igdb info
-    #for game in igdb_gameids_from_steam:
-    #    igdb_game_slug_list = game.get('game')
+
     responses = decode_api_response(wrapper.api_request(
             'games',
             f'fields url, slug; where id={igdb_game_ids_str};'
@@ -98,8 +93,8 @@ api_headers = {
     'Authorization': f'Bearer {access_token}'
 }
 wrapper = IGDBWrapper(IGDB_CLIENT_ID, access_token)
-backloggd_urls = steam_id_to_backloggd_url([427520,1363080],wrapper)
+#backloggd_urls = steam_id_to_backloggd_url([427520,1363080],wrapper)
 
-log.info(backloggd_urls)
+#log.info(backloggd_urls)
 
 

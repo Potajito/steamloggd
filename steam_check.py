@@ -7,7 +7,7 @@ from typing import Dict
 import json
 
 from cryptography.fernet import Fernet
-from encryption import encrypt_api_key, decrypt_api_key
+from encryption import encrypt_key, decrypt_key
 
 load_dotenv()
 
@@ -23,8 +23,20 @@ logging.basicConfig(level=LOGLEVEL,
                     handlers=[RichHandler(markup=True, rich_tracebacks=True)])
 log = logging.getLogger("rich")
 
+def get_steam_user(steam_id:int) -> SteamUser:
+    with open('user_db.json', 'r') as f:
+        user_db:list[dict] = json.load(f)
+        for user in user_db:
+            if user["steamid"] == steam_id:
+                steam_user = SteamUser()
+                steam_user = steam_user.from_dict(user)
+                log.info(steam_user.personaname)
 
-def init_steam_user (user_summary_json: str, user_recently_played_json) -> SteamUser:
+def init_steam_user (user_summary_json: str,
+                     user_recently_played_json,
+                     user_api_key: str,
+                     bl_user: str,
+                     bl_password: str) -> SteamUser:
     
     # Convert list of dictionaries to a dictionary with "appid" as the key, keeping "appid" inside the values
     games_dict = {
@@ -36,7 +48,9 @@ def init_steam_user (user_summary_json: str, user_recently_played_json) -> Steam
         steamid= int(user_summary_json["response"]["players"][0]["steamid"]),
         personaname=user_summary_json["response"]["players"][0]["personaname"],
         profileurl=user_summary_json["response"]["players"][0]["profileurl"],
-        api_key=encrypt_api_key(MY_API_KEY),
+        api_key=encrypt_key(user_api_key),
+        bl_user=bl_user,
+        bl_password=encrypt_key(bl_password),
         avatar=user_summary_json["response"]["players"][0]["avatar"],
         last_game_played=0,
         last_game_played_name="",
@@ -86,7 +100,9 @@ def load_user_db() -> Dict[str, SteamUser]:
                 steamid=steamid,
                 personaname=user_data['personaname'],
                 profileurl=user_data['profileurl'],
-                api_key=encrypt_api_key(MY_API_KEY),
+                api_key=user_data['api_key'],
+                bl_user=user_data['bl_user'],
+                bl_password=user_data['bl_password'],
                 avatar=user_data['avatar'],
                 last_game_played=user_data['last_game_played'],
                 last_game_played_name=user_data['last_game_played_name'],
