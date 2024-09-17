@@ -6,3 +6,4 @@ steam
 cryptography
 discord
 igdb-api-v4
+apscheduler
