@@ -25,6 +25,12 @@ logging.basicConfig(level=LOGLEVEL,
                     handlers=[RichHandler(markup=True, rich_tracebacks=True)])
 log = logging.getLogger("rich")
 
+if logging.root.level == logging.DEBUG:
+    install(show_locals=True)
+else:
+    install(show_locals=False)
+
+
 def get_steam_users(steam_ids: Union[int, list[int], None] = None) -> list[SteamUser]:
     requested_users:list[int] = []
     with open('user_db.json', 'r') as f:
@@ -178,7 +184,7 @@ def check_latest_played_games (api:WebAPI, users: Union[SteamUser, list[SteamUse
         user_last_played_times = response.json()
         user_db:list[SteamUser] = load_user_db()
         user.games = user_db[user.steamid].games.copy()
-        last_games_played:list[SteamId] = []
+        last_games_played:list[int] = []
         #last_playtime = user_db[user.steamid].last_playtime
         has_played = False
         # Step 1: Transform the list of games into a dictionary keyed by appid

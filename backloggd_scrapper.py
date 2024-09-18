@@ -2,12 +2,9 @@ import logging, os, requests, json
 import re
 from rich.logging import RichHandler
 from rich.traceback import install
-from dotenv import load_dotenv
 from configuration import LOGLEVEL, HEADERS
-import configuration
 from encryption import decrypt_key
 from igdb_steamloggd import steam_id_to_backloggd_url
-from exceptions import APIKeyNotValid
 from classes import SteamUser
 from playwright.sync_api import sync_playwright, Playwright
 import traceback
@@ -42,7 +39,7 @@ def log_game_web(playwright:Playwright, bl_user: str, bl_password: str, game_nam
     old_time:int = 0
     url = 'https://www.backloggd.com/users/sign_in/'
 
-    browser = playwright.chromium.launch(headless=False)  # Launch browser
+    browser = playwright.chromium.launch(headless=True)  # Launch browser
     page = browser.new_page()  # Open a new page
         
         # Navigate to the login page
@@ -63,19 +60,7 @@ def log_game_web(playwright:Playwright, bl_user: str, bl_password: str, game_nam
         page.click('button[id="open-game-log-modal-btn"]')
         page.click('div[id="journal-nav"]')
         
-        ## Click on today cell from journal if no recorded session
-        '''if not page.wait_for_selector('span[class="fc-title"]').is_visible():
-            log.info("Game has not logged sessions, logging first one")
-            
-            page.wait_for_selector('td[class*="fc-today"][class*="fc-"]')
-            page.click('td[class*="fc-today"][class*="fc-"]')
-            new_span = page.wait_for_selector('span[class="fc-title"]', state='visible')
-            new_span.click()
-            minutes_field = page.wait_for_selector('input[id="play_date_minutes"]', state='visible')
-            minutes_field.fill(str(time))
-            page.click('button[class="btn btn-main py-1"]')
-            page.click('button[class="btn btn-main save-log w-100"]')
-        else:'''        # Locate the third <div> with the class 'fc-row fc-week fc-widget-content'
+        # Locate the third <div> with the class 'fc-row fc-week fc-widget-content'
         third_div = page.locator('div.fc-row.fc-week.fc-widget-content:nth-of-type(3)')
 
         # Inside that <div>, find <tbody>
@@ -111,12 +96,6 @@ def log_game_web(playwright:Playwright, bl_user: str, bl_password: str, game_nam
         log.info(f"Backloggd log done for {game_name} for {time}.")
         log.info(f"Total today logged: {time+old_time}")
 
-    
-    # Check if login was successful
     #page.wait_for_timeout(5000)
     
     browser.close()
-
-
-#with sync_playwright() as playwright:
-#    log_game(playwright,"satisfactory",30)

@@ -3,11 +3,8 @@ import logging, os
 import requests
 from rich.logging import RichHandler
 from rich.traceback import install
-import configuration
-from datetime import datetime
-from classes import SteamUser, SteamId
 from configuration import LOGLEVEL
-from steam_check import init_steam_user, check_latest_played_games, get_steam_users
+from steam_check import check_latest_played_games, get_steam_users
 from steam.webapi import WebAPI
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -45,27 +42,5 @@ def main ():
 
     api = WebAPI(key=MY_API_KEY)
     steam_checker_scheduler_start(api)
-    #check_latest_played_games(api,get_steam_users(76561197960277619))
     run_discord_bot(api)
-    
-    
-    #recently_played = api.call('IPlayerService.GetRecentlyPlayedGames', steamid='76561197960277619', count=0)
-    #user_summary = api.call('ISteamUser.GetPlayerSummaries', steamids='76561197960277619')
-    
-    #user_summary_json = api.call('ISteamUser.GetPlayerSummaries',
-    #                             steamids='76561197960277619')
-    #user_recently_played_json = api.call('IPlayerService.GetRecentlyPlayedGames',
-    #                                     steamid='76561197960277619', count=0)
-    #response = requests.get(f"https://api.steampowered.com/IPlayerService/ClientGetLastPlayedTimes/v1/?key={MY_API_KEY}")
-    #user_last_played_times = response.json()
-    #steam_user = init_steam_user(user_summary_json,
-    #                             user_recently_played_json,
-    #                             MY_API_KEY,)
-    #check_latest_played_games(steam_user,user_recently_played_json,
-    #                          user_last_played_times)
-    
-    #api.call('ISteamUser.ResolveVanityURL', vanityurl="valve", url_type=2)
-    #api.ISteamUser.ResolveVanityURL(vanityurl="valve", url_type=2)
-    #api.ISteamUser.ResolveVanityURL_v1(vanityurl="valve", url_type=2)
-#get_steam_user(76561197960277619)    
 main()

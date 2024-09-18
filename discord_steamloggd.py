@@ -86,7 +86,6 @@ def run_discord_bot(api: WebAPI) -> None:
     # Connecting with Discord
         
     client = UpdatesClient(command_prefix='/', intents=discord.Intents().all())
-    #channel = client.get_channel(CHANNEL_ID)
     
     tree = client.tree
     @tree.command(guild=discord.Object(id=GUILD_ID), name='add_steam_user', description='Add Steam User')  # guild specific
@@ -109,7 +108,7 @@ def run_discord_bot(api: WebAPI) -> None:
                                     
         
         log.info (f"User {steam_user.personaname} added!")
-        #log.info (f"New user list: {}")
+
 
         if not steam_user:
             await interaction.response.send_message("Error 2: on API Key {user_input_api_key} or URL {user_url}!", ephemeral=True)
@@ -149,15 +148,13 @@ def get_user(api:WebAPI, user_url:str,
                                          steamid=user_steam_id, count=0)
     
     response = requests.get(f"https://api.steampowered.com/IPlayerService/ClientGetLastPlayedTimes/v1/?key={user_api_key}")
-    #user_last_played_times = response.json()
+
     steam_user = init_steam_user(user_summary_json,
                                  user_recently_played_json,
                                  user_api_key,
                                  bl_user,
                                  bl_password)
-    #user_last_played_times = api.call('IPlayerService.ClientGetLastPlayedTimes',
-    #                                  steamid='76561197960277619')
-    
+
     check_latest_played_games(api, steam_user)
     return steam_user
     

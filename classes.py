@@ -21,6 +21,3 @@ class SteamUser:
         for key, value in user_dict.items():
             setattr(self, key, value)
         return self
-
-class SteamId(str):
-    pass
