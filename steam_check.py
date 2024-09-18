@@ -1,9 +1,11 @@
-import logging, os
+import logging, os, requests
 from rich.logging import RichHandler
 from rich.traceback import install
 from dotenv import load_dotenv
+from steam.webapi import WebAPI
+from backloggd_scrapper import log_game
 
-from typing import Dict
+from typing import Dict, Union
 import json
 
 from cryptography.fernet import Fernet
@@ -23,14 +25,35 @@ logging.basicConfig(level=LOGLEVEL,
                     handlers=[RichHandler(markup=True, rich_tracebacks=True)])
 log = logging.getLogger("rich")
 
-def get_steam_user(steam_id:int) -> SteamUser:
+def get_steam_users(steam_ids: Union[int, list[int], None] = None) -> list[SteamUser]:
+    requested_users:list[int] = []
     with open('user_db.json', 'r') as f:
-        user_db:list[dict] = json.load(f)
-        for user in user_db:
-            if user["steamid"] == steam_id:
-                steam_user = SteamUser()
-                steam_user = steam_user.from_dict(user)
-                log.info(steam_user.personaname)
+        user_db: list[dict] = json.load(f)
+
+        # Convert user_db to a dictionary where keys are steamids
+        user_dict = {user["steamid"]: user for user in user_db}
+        
+        # If no steam_ids provided, return all users
+        if steam_ids is None:
+            steam_users = [SteamUser().from_dict(user) for user in user_db]
+            return steam_users
+        
+        # If a single integer is passed, convert it to a list
+        if isinstance(steam_ids, int):
+            steam_ids = [steam_ids]
+
+        steam_users: list[SteamUser] = []
+        
+        for steam_id in steam_ids:
+            if steam_id in user_dict:
+                steam_user = SteamUser().from_dict(user_dict[steam_id])
+                log.debug(f"Found user: {steam_user.personaname}")
+                steam_users.append(steam_user)
+                requested_users.append(steam_id)
+            else:
+                log.warning(f"User with steamid {steam_id} not found in the database")
+        log.info(f"Requested users: {requested_users}")
+        return steam_users
 
 def init_steam_user (user_summary_json: str,
                      user_recently_played_json,
@@ -107,10 +130,9 @@ def load_user_db() -> Dict[str, SteamUser]:
                 last_game_played=user_data['last_game_played'],
                 last_game_played_name=user_data['last_game_played_name'],
                 last_playtime=user_data['last_playtime'],
-                games=games
+                games=games.copy()
             )
         return users
-
 
 def update_user_db(user: SteamUser) -> None:
     with open('user_db.json', 'r+') as f:
@@ -135,53 +157,73 @@ def update_user_db(user: SteamUser) -> None:
         # Truncate the file to the current size (in case the new data is shorter)
         f.truncate()
 
+def is_playing (api: WebAPI, user:SteamUser, game_name: str):
+    ## Check if user is currently playing
+    user_summary_json = api.call('ISteamUser.GetPlayerSummaries',
+                        steamids=str(user.steamid))
+    if user_summary_json.get("response").get("players")[0].get("gameextrainfo") == str(game_name):
+        log.info(f"{user.personaname} is currently playing {game_name}")
+        return True
+    return False
 
-def check_latest_played_games (user: SteamUser, user_recently_played_json: dict,
-                               user_last_played_times: dict) -> SteamId:
-    log.info(f"Checking latest played games for {user.personaname}")
-    user_db:list[SteamUser] = load_user_db()
-    user.games = user_db[user.steamid].games.copy()
-    last_games_played:list[SteamId] = []
-    #last_playtime = user_db[user.steamid].last_playtime
-    has_played = False
-    # Step 1: Transform the list of games into a dictionary keyed by appid
-    games_dict = {g["appid"]: g for g in user_last_played_times["response"]["games"]}
+def check_latest_played_games (api:WebAPI, users: Union[SteamUser, list[SteamUser]]) -> SteamId:
+    if isinstance(users, SteamUser):
+        users = [users]
     
-
-                
-    for game in user_recently_played_json["response"]["games"]:
-        last_games_played.append(game["appid"])
-        if game["appid"] in games_dict:
-            log.debug (f"{user.personaname} has played {game['name']}")
-            # Init "last_playtime" key if not present
-            if 'last_playtime' not in user_db[user.steamid].games.get(game['appid']):
-                if user.last_playtime < games_dict[game["appid"]]["last_playtime"]:
-                    user.last_game_played = game["appid"]
-                    user.last_game_played_name = game["name"]
-                    user.last_playtime = games_dict[game["appid"]]["last_playtime"]
-                user.games[game['appid']]['last_playtime'] = games_dict[game["appid"]]["last_playtime"]
-                update_user_db(user)
-                user_db:list[SteamUser] = load_user_db()
-            else:    
-                # There has been a new session
-                if user_db[user.steamid].last_playtime < games_dict[game["appid"]]["last_playtime"]:
-                    log.info(f"New session detected: {game['name']}, playtime: {user_db[user.steamid].last_playtime}")
-                    new_forever_playtime = games_dict[game["appid"]]["playtime_forever"]
-                    previous_forever_playtime = user_db[user.steamid].games[game['appid']]['playtime_forever']
-                    last_playtime_session = new_forever_playtime - previous_forever_playtime
+    for user in users:
+        log.info(f"Checking latest played games for {user.personaname}")
+        user_recently_played_json = api.call('IPlayerService.GetRecentlyPlayedGames',
+                                            steamid=user.steamid, count=0)
+        response = requests.get(f"https://api.steampowered.com/IPlayerService/ClientGetLastPlayedTimes/v1/?key={decrypt_key(user.api_key)}")
+        user_last_played_times = response.json()
+        user_db:list[SteamUser] = load_user_db()
+        user.games = user_db[user.steamid].games.copy()
+        last_games_played:list[SteamId] = []
+        #last_playtime = user_db[user.steamid].last_playtime
+        has_played = False
+        # Step 1: Transform the list of games into a dictionary keyed by appid
+        games_dict = {g["appid"]: g for g in user_last_played_times["response"]["games"]}
                     
-                    user.last_game_played = game["appid"]
-                    user.last_game_played_name = game["name"]
-                    user.last_playtime = games_dict[game["appid"]]["last_playtime"]
-                    user.games[game['appid']]['playtime_forever'] = new_forever_playtime
+        for game in user_recently_played_json["response"]["games"]:
+            last_games_played.append(game["appid"])
+            if game["appid"] in games_dict:
+                log.debug (f"{user.personaname} has played {game['name']}")
+                # Init "last_playtime" key if not present
+                if 'last_playtime' not in user_db[user.steamid].games.get(game['appid']):
+                    if user.last_playtime < games_dict[game["appid"]]["last_playtime"]:
+                        user.last_game_played = game["appid"]
+                        user.last_game_played_name = game["name"]
+                        user.last_playtime = games_dict[game["appid"]]["last_playtime"]
                     user.games[game['appid']]['last_playtime'] = games_dict[game["appid"]]["last_playtime"]
-                    #user.last_playtime = last_playtime
                     update_user_db(user)
                     user_db:list[SteamUser] = load_user_db()
-                    has_played = True
-            
-    log.info (f"Last game played: {user_db[user.steamid].last_game_played_name}")
-    if has_played:
-        log.info (f"Last session playtime: {last_playtime_session} minutes for user {user.personaname}")
-    else:
-        log.info (f"All sessions logged for user {user.personaname}")
+                else:    
+                    # There has been a new session
+                    if user_db[user.steamid].last_playtime < games_dict[game["appid"]]["last_playtime"]:
+                        log.info(f"New session detected: {game['name']}, playtime: {user_db[user.steamid].last_playtime}")
+                        ## Check if user is currently playing
+                        if is_playing(api, user, game["name"]):
+                            continue
+                        new_forever_playtime = games_dict[game["appid"]]["playtime_forever"]
+                        previous_forever_playtime = user_db[user.steamid].games[game['appid']]['playtime_forever']
+                        last_playtime_session = new_forever_playtime - previous_forever_playtime
+                        
+                        user.last_game_played = game["appid"]
+                        user.last_game_played_name = game["name"]
+                        user.last_playtime = games_dict[game["appid"]]["last_playtime"]
+                        user.games[game['appid']]['playtime_forever'] = new_forever_playtime
+                        user.games[game['appid']]['last_playtime'] = games_dict[game["appid"]]["last_playtime"]
+                        #user.last_playtime = last_playtime
+                        update_user_db(user)
+                        user_db:list[SteamUser] = load_user_db()
+                        has_played = True
+                
+        log.info (f"Last game played: {user_db[user.steamid].last_game_played_name}")
+        if has_played:
+            if last_playtime_session > 4:
+                log_game(user, user_db[user.steamid].last_game_played,last_playtime_session)
+                log.info (f"Last session playtime: {last_playtime_session} minutes for user {user.personaname}")
+            else:
+                log.info (f"Short last session playtime: {last_playtime_session} minutes, not logging")
+        else:
+            log.info (f"All sessions logged for user {user.personaname}")

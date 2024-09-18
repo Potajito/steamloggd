@@ -149,7 +149,7 @@ def get_user(api:WebAPI, user_url:str,
                                          steamid=user_steam_id, count=0)
     
     response = requests.get(f"https://api.steampowered.com/IPlayerService/ClientGetLastPlayedTimes/v1/?key={user_api_key}")
-    user_last_played_times = response.json()
+    #user_last_played_times = response.json()
     steam_user = init_steam_user(user_summary_json,
                                  user_recently_played_json,
                                  user_api_key,
@@ -158,7 +158,6 @@ def get_user(api:WebAPI, user_url:str,
     #user_last_played_times = api.call('IPlayerService.ClientGetLastPlayedTimes',
     #                                  steamid='76561197960277619')
     
-    check_latest_played_games(steam_user,user_recently_played_json,
-                              user_last_played_times)
+    check_latest_played_games(api, steam_user)
     return steam_user
     

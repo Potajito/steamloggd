@@ -7,7 +7,7 @@ import configuration
 from datetime import datetime
 from classes import SteamUser, SteamId
 from configuration import LOGLEVEL
-from steam_check import init_steam_user, check_latest_played_games, get_steam_user
+from steam_check import init_steam_user, check_latest_played_games, get_steam_users
 from steam.webapi import WebAPI
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -30,10 +30,11 @@ else:
     install(show_locals=False)
 
 
-def steam_checker_scheduler_start():
+def steam_checker_scheduler_start(api: WebAPI):
     scheduler = BackgroundScheduler()
-    scheduler.add_job(check_latest_played_games(get_steam_user(76561197960277619)),
-                      'interval',seconds=10)
+    scheduler.add_job(check_latest_played_games, 'interval', minutes=2,
+                  args=[api, get_steam_users()])
+
     scheduler.start()
     if scheduler.running:
         log.info("Steam Checker scheduler running")
@@ -43,7 +44,8 @@ def steam_checker_scheduler_start():
 def main ():
 
     api = WebAPI(key=MY_API_KEY)
-    steam_checker_scheduler_start()
+    steam_checker_scheduler_start(api)
+    #check_latest_played_games(api,get_steam_users(76561197960277619))
     run_discord_bot(api)
     
     
@@ -66,4 +68,4 @@ def main ():
     #api.ISteamUser.ResolveVanityURL(vanityurl="valve", url_type=2)
     #api.ISteamUser.ResolveVanityURL_v1(vanityurl="valve", url_type=2)
 #get_steam_user(76561197960277619)    
-#main()
+main()

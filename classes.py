@@ -3,31 +3,17 @@ from dataclasses import dataclass, asdict
 
 @dataclass
 class SteamUser:
-    def __init__ (self,
-        steamid=0,
-        personaname="",
-        profileurl="",
-        api_key="",
-        bl_user="",
-        bl_password="",
-        avatar="",
-        last_game_played=0,
-        last_game_played_name="",
-        last_playtime=0,
-        games={}):
-        pass
-    
-    steamid: int
-    personaname: str
-    profileurl: str
-    api_key: str
-    bl_user: str
-    bl_password: str
-    avatar: str
-    last_game_played: int
-    last_game_played_name: str
-    last_playtime: int
-    games: dict[int, dict]
+    steamid: int = 0
+    personaname: str = ""
+    profileurl: str = ""
+    api_key: str = ""
+    bl_user: str = ""
+    bl_password: str = ""
+    avatar: str = ""
+    last_game_played: int = 0
+    last_game_played_name: str = ""
+    last_playtime: int = 0
+    games: dict[int, dict] = None
     
     def to_dict(self):
         return asdict(self)

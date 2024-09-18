@@ -7,7 +7,7 @@ from rich.traceback import install
 from dotenv import load_dotenv
 from configuration import LOGLEVEL, HEADERS
 import configuration
-
+from typing import Union
 
 from exceptions import APIKeyNotValid
 from classes import SteamUser
@@ -64,7 +64,13 @@ def decode_api_response(byte_array: bytes) -> list[dict]:
     response_dict = json.loads(response_str)
     return response_dict
 
-def steam_id_to_backloggd_url(steam_ids: list[int], wrapper: IGDBWrapper) -> list[str]:
+def steam_id_to_backloggd_url(steam_ids: Union[int, list[int]]) -> list[str]:
+    return _steam_id_to_backloggd_url(steam_ids, wrapper)
+
+def _steam_id_to_backloggd_url(steam_ids: Union[int, list[int]], wrapper: IGDBWrapper) -> list[str]:
+    if isinstance(steam_ids, int):
+        steam_ids = [steam_ids]
+    
     backloggd_urls = []
     steam_ids_str = ",".join(f'"{str(id)}"' for id in steam_ids)
     steam_ids_str = f"({steam_ids_str})"
