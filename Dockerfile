@@ -14,6 +14,7 @@ COPY . /app
 
 # Install any necessary dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
+RUN playwright install-deps
 RUN playwright install
 
 # Run app.py when the container launches
