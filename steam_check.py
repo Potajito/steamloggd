@@ -16,7 +16,7 @@ load_dotenv()
 MY_API_KEY = os.getenv("MY_API_KEY")
 
 from configuration import LOGLEVEL
-from classes import SteamUser, SteamId
+from classes import SteamUser
 
 FORMAT = "%(message)s"
 logging.basicConfig(level=LOGLEVEL,
@@ -172,7 +172,7 @@ def is_playing (api: WebAPI, user:SteamUser, game_name: str):
         return True
     return False
 
-def check_latest_played_games (api:WebAPI, users: Union[SteamUser, list[SteamUser]]) -> SteamId:
+def check_latest_played_games (api:WebAPI, users: Union[SteamUser, list[SteamUser]]):
     if isinstance(users, SteamUser):
         users = [users]
     
