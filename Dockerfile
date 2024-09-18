@@ -18,4 +18,4 @@ RUN playwright install-deps
 RUN playwright install
 
 # Run app.py when the container launches
-CMD ["python", "app.py"]
+CMD ["python", "main.py"]
