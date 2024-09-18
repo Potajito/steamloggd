@@ -32,7 +32,8 @@ else:
 
 def steam_checker_scheduler_start():
     scheduler = BackgroundScheduler()
-    scheduler.add_job(check_latest_played_games(), 'interval',seconds=10)
+    scheduler.add_job(check_latest_played_games(get_steam_user(76561197960277619)),
+                      'interval',seconds=10)
     scheduler.start()
     if scheduler.running:
         log.info("Steam Checker scheduler running")
@@ -64,5 +65,5 @@ def main ():
     #api.call('ISteamUser.ResolveVanityURL', vanityurl="valve", url_type=2)
     #api.ISteamUser.ResolveVanityURL(vanityurl="valve", url_type=2)
     #api.ISteamUser.ResolveVanityURL_v1(vanityurl="valve", url_type=2)
-get_steam_user(76561197960277619)    
+#get_steam_user(76561197960277619)    
 #main()
