@@ -26,6 +26,7 @@ if logging.root.level == logging.DEBUG:
 else:
     install(show_locals=False)
 
+#
 
 def steam_checker_scheduler_start(api: WebAPI):
     scheduler = BackgroundScheduler()
