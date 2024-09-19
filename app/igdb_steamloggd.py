@@ -11,6 +11,7 @@ from typing import Union
 
 from exceptions import APIKeyNotValid
 from classes import SteamUser
+import sys
 
 
 FORMAT = "%(message)s"
@@ -31,7 +32,7 @@ IGDB_CLIENT_ID= os.getenv("IGDB_CLIENT_ID")
 IGDB_SECRET= os.getenv("IGDB_SECRET")
 
 
-def auth_igdb () -> str:
+def auth_igdb (retries:int = 3) -> str:
     """Auth to igdb, returns access token
 
     Returns:
@@ -47,8 +48,9 @@ def auth_igdb () -> str:
         # valid for around 64 days
         return response.json()['access_token']
     else:
-        log.error(f"IGDB Failed: {response.status_code} {response.text}")
-        return "0"
+        log.error(f"IGDB Failed: {response.status_code} {response.text}. Retrying...")
+        auth_igdb(retries-1)
+        sys.exit(1)
     
 def igdb_scheduler_start():
     scheduler = BackgroundScheduler()
