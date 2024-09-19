@@ -3,3 +3,4 @@
 /.vscode/
 /db/
 .env
+/app/__pycache__/
