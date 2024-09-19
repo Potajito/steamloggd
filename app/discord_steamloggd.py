@@ -88,7 +88,8 @@ def run_discord_bot(api: WebAPI) -> None:
     client = UpdatesClient(command_prefix='/', intents=discord.Intents().all())
     
     tree = client.tree
-    @tree.command(guild=discord.Object(id=GUILD_ID), name='add_steam_user', description='Add Steam User')  # guild specific
+    @tree.command(guild=discord.Object(id=GUILD_ID),
+                  name='add_steam_user', description='Add Steam User')  # guild specific
     async def add_user(interaction: discord.Interaction,
                        user_input_api_key: str,
                        steam_user_url: str,

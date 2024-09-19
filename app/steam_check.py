@@ -4,6 +4,7 @@ from rich.traceback import install
 from dotenv import load_dotenv
 from steam.webapi import WebAPI
 from backloggd_scrapper import log_game
+from pathlib import Path
 
 from typing import Dict, Union
 import json
@@ -33,7 +34,7 @@ else:
 
 def get_steam_users(steam_ids: Union[int, list[int], None] = None) -> list[SteamUser]:
     requested_users:list[int] = []
-    with open('user_db.json', 'r') as f:
+    with open(Path("db").joinpath("user_db.json"), 'r') as f:
         user_db: list[dict] = json.load(f)
 
         # Convert user_db to a dictionary where keys are steamids
@@ -87,7 +88,7 @@ def init_steam_user (user_summary_json: str,
         games=games_dict
     )
     try:
-        with open('user_db.json', 'r+') as f:
+        with open(Path("db").joinpath("user_db.json"), 'r+') as f:
             user_db:list[dict] = json.load(f)
             # Extract appid from db into a set for fast lookup
             app_ids_set = {g["steamid"] for g in user_db}
@@ -102,7 +103,7 @@ def init_steam_user (user_summary_json: str,
                 log.info (f"Returning user: {user.personaname}")
     except FileNotFoundError:
         log.info ("user_db.json not found, creating it")
-        with open('user_db.json', 'w') as f:
+        with open(Path("db").joinpath("user_db.json"), 'w') as f:
             user_db = []
             user_db:list[dict]
             user_db.append(user.to_dict())
@@ -111,7 +112,7 @@ def init_steam_user (user_summary_json: str,
     return user
 
 def load_user_db() -> Dict[str, SteamUser]:
-    with open('user_db.json', 'r') as f:
+    with open(Path("db").joinpath("user_db.json"), 'r') as f:
         user_db_list: list[dict] = json.load(f)  # Load JSON data which is a list of dictionaries
 
         users: Dict[int, SteamUser] = {}  # Change key type to int
@@ -141,7 +142,7 @@ def load_user_db() -> Dict[str, SteamUser]:
         return users
 
 def update_user_db(user: SteamUser) -> None:
-    with open('user_db.json', 'r+') as f:
+    with open(Path("db").joinpath("user_db.json"), 'r+') as f:
         user_db: list[dict] = json.load(f)  # user_db is a list of dictionaries
         
         # Update the user info
