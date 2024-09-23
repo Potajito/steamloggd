@@ -29,7 +29,11 @@ else:
 
 def steam_checker_scheduler_start(api: WebAPI):
     scheduler = BackgroundScheduler()
-    scheduler.add_job(check_latest_played_games, 'interval', minutes=2,
+    if logging.root.level == logging.DEBUG:
+        scheduler.add_job(check_latest_played_games, 'interval', seconds=10,
+                  args=[api, get_steam_users()])
+    else:
+        scheduler.add_job(check_latest_played_games, 'interval', minutes=2,
                   args=[api, get_steam_users()])
 
     scheduler.start()

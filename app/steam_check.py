@@ -1,4 +1,4 @@
-import logging, os, requests
+import logging, os, requests, copy
 from rich.logging import RichHandler
 from rich.traceback import install
 from dotenv import load_dotenv
@@ -164,6 +164,11 @@ def update_user_db(user: SteamUser) -> None:
         # Truncate the file to the current size (in case the new data is shorter)
         f.truncate()
 
+def add_game (user: SteamUser, game: dict):
+    user.games[game.get("appid")] = game
+    update_user_db(user)
+    log.info(f"Added game {game.get("name")} to {user.personaname}")
+
 def is_playing (api: WebAPI, user:SteamUser, game_name: str):
     ## Check if user is currently playing
     user_summary_json = api.call('ISteamUser.GetPlayerSummaries',
@@ -192,10 +197,15 @@ def check_latest_played_games (api:WebAPI, users: Union[SteamUser, list[SteamUse
         games_dict = {g["appid"]: g for g in user_last_played_times["response"]["games"]}
                     
         for game in user_recently_played_json["response"]["games"]:
+            game:dict
             last_games_played.append(game["appid"])
             if game["appid"] in games_dict:
-                log.debug (f"{user.personaname} has played {game['name']}")
+                log.debug (f"{user.personaname} has played {game.get("name")}")
                 # Init "last_playtime" key if not present
+                if not user_db[user.steamid].games.get(game.get("appid")):
+                    log.info(f"New game: {game.get("name")}")
+                    add_game(user, game)
+                    user_db[user.steamid].games = user.games.copy()
                 if 'last_playtime' not in user_db[user.steamid].games.get(game['appid']):
                     if user.last_playtime < games_dict[game["appid"]]["last_playtime"]:
                         user.last_game_played = game["appid"]
@@ -203,7 +213,8 @@ def check_latest_played_games (api:WebAPI, users: Union[SteamUser, list[SteamUse
                         user.last_playtime = games_dict[game["appid"]]["last_playtime"]
                     user.games[game['appid']]['last_playtime'] = games_dict[game["appid"]]["last_playtime"]
                     update_user_db(user)
-                    user_db:list[SteamUser] = load_user_db()
+                    user_db[user.steamid] = copy.deepcopy(user)
+                    #user_db:list[SteamUser] = load_user_db()
                 else:    
                     # There has been a new session
                     if user_db[user.steamid].last_playtime < games_dict[game["appid"]]["last_playtime"]:
@@ -222,7 +233,8 @@ def check_latest_played_games (api:WebAPI, users: Union[SteamUser, list[SteamUse
                         user.games[game['appid']]['last_playtime'] = games_dict[game["appid"]]["last_playtime"]
                         #user.last_playtime = last_playtime
                         update_user_db(user)
-                        user_db:list[SteamUser] = load_user_db()
+                        user_db[user.steamid] = copy.deepcopy(user)
+                        #user_db:list[SteamUser] = load_user_db()
                         has_played = True
                 
         log.info (f"Last game played: {user_db[user.steamid].last_game_played_name}")
