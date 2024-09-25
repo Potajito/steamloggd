@@ -3,7 +3,7 @@ from pathlib import Path
 import requests
 from rich.logging import RichHandler
 from rich.traceback import install
-from configuration import LOGLEVEL
+from configuration import LOGLEVEL, SCHEDULER_INTERVAL
 from steam_check import check_latest_played_games, get_steam_users
 from steam.webapi import WebAPI
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -25,15 +25,15 @@ if logging.root.level == logging.DEBUG:
     install(show_locals=True)
 else:
     install(show_locals=False)
+    
 
 
-def steam_checker_scheduler_start(api: WebAPI):
-    scheduler = BackgroundScheduler()
+def steam_checker_scheduler_start(api: WebAPI, scheduler: BackgroundScheduler):
     if logging.root.level == logging.DEBUG:
-        scheduler.add_job(check_latest_played_games, 'interval', seconds=10,
+        scheduler.add_job(check_latest_played_games, 'interval', seconds=SCHEDULER_INTERVAL,
                   args=[api, get_steam_users()])
     else:
-        scheduler.add_job(check_latest_played_games, 'interval', minutes=2,
+        scheduler.add_job(check_latest_played_games, 'interval', seconds=SCHEDULER_INTERVAL,
                   args=[api, get_steam_users()])
 
     scheduler.start()
@@ -61,8 +61,8 @@ def main ():
             user_db = []
             user_db:list[dict]
             json.dump(user_db, f, indent=4)
-
+    scheduler = BackgroundScheduler()
     api = WebAPI(key=MY_API_KEY)
-    steam_checker_scheduler_start(api)
-    run_discord_bot(api)
+    steam_checker_scheduler_start(api, scheduler)
+    run_discord_bot(api, scheduler)
 main()

@@ -5,10 +5,12 @@ load_dotenv()
 
 #.ENVS
 
-if os.getenv("LOGLEVEL") is None:
+if (os.getenv("LOGLEVEL") is None) or int(os.getenv("LOGLEVEL")) == 10:
     LOGLEVEL=logging.DEBUG
+    SCHEDULER_INTERVAL= 5
 else:
     LOGLEVEL = int(os.getenv("LOGLEVEL"))
+    SCHEDULER_INTERVAL= 120
     ### LOGLEVELS
 
     #CRITICAL = 50

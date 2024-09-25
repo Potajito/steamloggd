@@ -1,4 +1,4 @@
-import logging, os, requests, copy
+import logging, os, requests, copy, re
 from rich.logging import RichHandler
 from rich.traceback import install
 from dotenv import load_dotenv
@@ -11,12 +11,13 @@ import json
 
 from cryptography.fernet import Fernet
 from encryption import encrypt_key, decrypt_key
+from exceptions import APIKeyNotValid, SteamURLNotValid
 
 load_dotenv()
 
 MY_API_KEY = os.getenv("MY_API_KEY")
 
-from configuration import LOGLEVEL
+from configuration import LOGLEVEL, SCHEDULER_INTERVAL
 from classes import SteamUser
 
 FORMAT = "%(message)s"
@@ -31,6 +32,20 @@ if logging.root.level == logging.DEBUG:
 else:
     install(show_locals=False)
 
+def get_steam_id_from_url(api: WebAPI, user_url:str) -> int:
+    vanity_url_match = re.search(r'/id/([^/]+)/?$', user_url)
+    if vanity_url_match:
+        vanity_url = vanity_url_match.group(1)
+    else:
+        raise SteamURLNotValid
+    response:dict = api.call('ISteamUser.ResolveVanityURL', vanityurl=vanity_url, url_type=1)
+    response:dict = response.get("response")
+    try:
+        if response.get("success") == 1:
+            user_steam_id = int(response["steamid"])
+            return user_steam_id
+    except:
+        raise SteamURLNotValid
 
 def get_steam_users(steam_ids: Union[int, list[int], None] = None) -> list[SteamUser]:
     requested_users:list[int] = []
@@ -110,6 +125,22 @@ def init_steam_user (user_summary_json: str,
             json.dump(user_db, f, indent=4)
             
     return user
+
+def save_user_db(user_db: Dict[str, SteamUser]) -> None:
+    try:
+        with open(Path("db").joinpath("user_db.json"), 'r+') as f:
+            # Convert user_db to a serializable format (i.e., dictionary of dictionaries)
+            serializable_user_db = [user.to_dict() for user in user_db.values()]            
+            f.seek(0)
+            
+            # Write the updated user_db back to the file
+            json.dump(serializable_user_db, f, indent=4)
+            
+            # Truncate the file to the current size (in case the new data is shorter)
+            f.truncate()
+            log.info("User database saved successfully.")
+    except Exception as e:
+        log.error(f"Error saving user database: {e}")
 
 def load_user_db() -> Dict[str, SteamUser]:
     with open(Path("db").joinpath("user_db.json"), 'r') as f:

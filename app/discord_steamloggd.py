@@ -4,13 +4,14 @@ from rich.logging import RichHandler
 from rich.traceback import install
 from dotenv import load_dotenv
 from steam.webapi import WebAPI
-from configuration import LOGLEVEL
+from configuration import LOGLEVEL, SCHEDULER_INTERVAL
 import configuration
 
-
-from exceptions import APIKeyNotValid
+from exceptions import APIKeyNotValid, SteamURLNotValid
 from classes import SteamUser
-from steam_check import init_steam_user, check_latest_played_games
+from apscheduler.schedulers.background import BackgroundScheduler
+from steam_check import init_steam_user, check_latest_played_games, get_steam_users
+from steam_check import load_user_db, get_steam_id_from_url, save_user_db
 
 import discord
 from discord.ext import commands, tasks
@@ -77,9 +78,7 @@ class UpdatesClient(commands.Bot):
         #reviews = rsh.get_reviews(users)
     
           
-def run_discord_bot(api: WebAPI) -> None:
-    
-
+def run_discord_bot(api: WebAPI, scheduler: BackgroundScheduler ) -> None:
     logging.debug(f"Channel ID: {CHANNEL_ID}")
     intents = discord.Intents.default()
     intents.message_content = True
@@ -97,33 +96,67 @@ def run_discord_bot(api: WebAPI) -> None:
                        backloggd_password: str):
         
         try:
+            scheduler.remove_all_jobs()
             steam_user: SteamUser = get_user(api,steam_user_url.strip(),
                                              user_input_api_key.strip(),
                                              backloggd_username_or_email.strip(),
                                              backloggd_password)
             await interaction.response.send_message("¡Añadido!", ephemeral=True)
+            log.info (f"User {steam_user.personaname} added!")
         except APIKeyNotValid:
+            scheduler.add_job(check_latest_played_games, 'interval', seconds=SCHEDULER_INTERVAL,
+                  args=[api, get_steam_users()])
             log.error(f"Error 1: on API Key {user_input_api_key} or URL {steam_user_url}!")
             await interaction.response.send_message("Error on API Key or URL!", ephemeral=True)
-            return
-                                    
-        
-        log.info (f"User {steam_user.personaname} added!")
-
-
+        except Exception as e:
+            scheduler.add_job(check_latest_played_games, 'interval', seconds=SCHEDULER_INTERVAL,
+                  args=[api, get_steam_users()])
+            log.error(f"Error 2: {e}")
         if not steam_user:
             await interaction.response.send_message("Error 2: on API Key {user_input_api_key} or URL {user_url}!", ephemeral=True)
-            return
+        scheduler.add_job(check_latest_played_games, 'interval', seconds=SCHEDULER_INTERVAL,
+                  args=[api, get_steam_users()])
+        
+        
+    @tree.command(guild=discord.Object(id=GUILD_ID),
+                  name='remove_steam_user', description='Remove Steam User')  # guild specific    
+    async def remove_user(interaction: discord.Interaction,
+                       steam_user_url: str):
+        
+        try:
+            scheduler.remove_all_jobs()
+            user_db = load_user_db()
+            steam_userid = get_steam_id_from_url(api, steam_user_url)
+            del user_db[steam_userid]
+            save_user_db(user_db)
+            scheduler.add_job(check_latest_played_games, 'interval', seconds=SCHEDULER_INTERVAL,
+                  args=[api, get_steam_users()])
+            await interaction.response.send_message("¡Eliminado!", ephemeral=True)
+            
+            
+        except (KeyError, SteamURLNotValid):
+            log.error(f"Error 2: User: {steam_user_url} not in db!")
+            await interaction.response.send_message("User not in database!", ephemeral=True)
+            scheduler.add_job(check_latest_played_games, 'interval', seconds=SCHEDULER_INTERVAL,
+                  args=[api, get_steam_users()])
+        except Exception as e:
+            log.error(f"Error 3: {e}")
+            await interaction.response.send_message("Error!", ephemeral=True)
+            scheduler.add_job(check_latest_played_games, 'interval', seconds=SCHEDULER_INTERVAL,
+                  args=[api, get_steam_users()])
+    
+    '''     
     
     @tree.command(guild=discord.Object(id=GUILD_ID), name='sync_steam', description='Sync bot (dev)')  # guild specific
     async def sync_bot(interaction: discord.Interaction):
         await tree.sync(guild=discord.Object(id=GUILD_ID))
         await interaction.response.send_message("Bot synced!", ephemeral=True)
-        log.info (f"Bot synced!") 
+        log.info (f"Bot synced!") '''
         
     client.run(DISCORD_TOKEN)
     
-    
+
+   
 def get_user(api:WebAPI, user_url:str,
              user_api_key:str,
              bl_user: str,
