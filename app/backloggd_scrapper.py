@@ -92,8 +92,8 @@ def log_game_web(playwright:Playwright, bl_user: str, bl_password: str, game_nam
             #today_cell = page.query_selector('//td[contains(@class, "fc-today")]') # xpath version
             log.debug(today_cell.inner_html())
             today_cell.click(force=True)
-            new_span = page.wait_for_selector('span[class="fc-title"]', state='visible')
-            new_span.click()
+            #new_span = page.wait_for_selector('span[class="fc-title"]', state='visible')
+            #new_span.click()
             minutes_field = page.wait_for_selector('input[id="play_date_minutes"]', state='visible')
             minutes_field.fill(str(time))
             page.click('button[class="btn btn-main py-1"]')
