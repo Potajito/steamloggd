@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  steamloggd:
+    image: ghcr.io/potajito/steamloggd:latest
+    container_name: steamloggd-container
+    ports:
+      - "9783:80"
+    environment:
+      MY_API_KEY: "yourpersonalapikey" # Needed for some operations, users will need to provide theirs via discord bot
+      ENCRYPTION_KEY: "32bitbase64key" # Generate a 32 bit base64 key, for example at: https://generate.plus/en/base64
+      DISCORD_TOKEN: "discord_bot_token"
+      GUILD_ID: "discord_server_id"
+      CHANNEL_ID: "discord_channel_id"
+      IGDB_CLIENT_ID: "client_id_for_igdb_api"
+      IGDB_SECRET: "secret_for_igdb_api"
+      LOGLEVEL: "20" # 20 for normal use, 10 for debu
+    volumes:
+      - /your/path/db:/app/db
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
