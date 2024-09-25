@@ -7,6 +7,5 @@ To interface with the bot (add or remove users) it uses a Discord bot that asks 
 There is a provided docker package that builds with each master git commit, you only need to setup the env variables on the compose file.
 
 ## To-do
-- Remove users
 - Better error handling
 - Optimize multiple user logging on backloggd
