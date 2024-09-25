@@ -64,40 +64,31 @@ def log_game_web(playwright:Playwright, bl_user: str, bl_password: str, game_nam
         page.click('button[id="open-game-log-modal-btn"]')
         page.click('div[id="journal-nav"]')
         
-        # Locate the third <div> with the class 'fc-row fc-week fc-widget-content'
-        third_div = page.locator('div.fc-row.fc-week.fc-widget-content:nth-of-type(3)')
+        prev_played_buttons = page.query_selector_all('span.fc-title:has-text("Played")')
+        today_cell = page.wait_for_selector('td.fc-today')
+        #today_cell = page.query_selector('//td[contains(@class, "fc-today")]') # xpath version
+        today_cell.click(force=True)
+        page.wait_for_timeout(1000)  # short wait to give time for dynamic content to load
+        current_played_buttons = page.query_selector_all('span.fc-title:has-text("Played")')
+        if len(current_played_buttons) > len(prev_played_buttons): #hasn't played today
+            log.debug("Newly played game today")
+            played_button = current_played_buttons[-1]  # Get the last added button
+            played_button.click(force=True)
+            
+        # Already played today, user already in log minutes screen
+        minutes_field = page.wait_for_selector('input[id="play_date_minutes"]', state='visible')
 
-        # Inside that <div>, find <tbody>
-        tbody = third_div.locator('tbody')
-
-        # Inside <tbody>, find <tr>
-        tr = tbody.locator('tr')
-
-        # Inside <tr>, find the 4th <td> with the class 'fc-event-container'
-        fourth_td = tr.locator('td.fc-event-container:nth-of-type(4)')
-
-        # Inside that <td>, find the <a> button
-        played_button = fourth_td.locator('a.fc-day-grid-event.fc-h-event.fc-event.fc-start.fc-end.fc-draggable.fc-resizable')
-        if played_button.is_visible():
-            log.debug("Already logged sessions, trying to update session")
-            played_button.click()
-            minutes_field = page.wait_for_selector('input[id="play_date_minutes"]', state='visible')
+        if minutes_field.input_value() == "":
+            minutes_field.fill(str(time))
+        else:
             old_time = int(minutes_field.input_value())
             minutes_field.fill(str(time+old_time))
-            page.click('button[class="btn btn-main py-1"]')
-            page.click('button[class="btn btn-main save-log w-100"]')
-        else:
-            log.debug("Newly played game today")
-            today_cell = page.wait_for_selector('td.fc-today')
-            #today_cell = page.query_selector('//td[contains(@class, "fc-today")]') # xpath version
-            log.debug(today_cell.inner_html())
-            today_cell.click(force=True)
-            #new_span = page.wait_for_selector('span[class="fc-title"]', state='visible')
-            #new_span.click()
-            minutes_field = page.wait_for_selector('input[id="play_date_minutes"]', state='visible')
-            minutes_field.fill(str(time))
-            page.click('button[class="btn btn-main py-1"]')
-            page.click('button[class="btn btn-main save-log w-100"]')
+        #minutes_field.fill(str(time))
+        save_session_button = page.wait_for_selector('button[id="play-date-update"]')
+        save_session_button.click()
+        save_journal_button = page.wait_for_selector('button[class="btn btn-main save-log w-100"]')
+        #page.click('button[class="btn btn-main py-1"]')
+        save_journal_button.click()
 
         log.info(f"Backloggd log done for {game_name} for {time}.")
         log.info(f"Total today logged: {time+old_time}")

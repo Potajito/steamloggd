@@ -25,4 +25,4 @@ else:
     install(show_locals=False)
 
 
-log_game(get_steam_users(76561197960277619)[0],2666510,10)
+log_game(get_steam_users(76561197960277619)[0],2666510,15)
