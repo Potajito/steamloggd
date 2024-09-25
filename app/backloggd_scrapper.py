@@ -39,7 +39,11 @@ def log_game_web(playwright:Playwright, bl_user: str, bl_password: str, game_nam
     old_time:int = 0
     url = 'https://www.backloggd.com/users/sign_in/'
 
-    browser = playwright.chromium.launch(headless=True)  # Launch browser
+    if LOGLEVEL == logging.DEBUG:
+        browser = playwright.chromium.launch(headless=False)  # Launch browser
+    else:
+        browser = playwright.chromium.launch(headless=True)  # Launch browser    
+    
     page = browser.new_page()  # Open a new page
         
         # Navigate to the login page
@@ -83,9 +87,11 @@ def log_game_web(playwright:Playwright, bl_user: str, bl_password: str, game_nam
             page.click('button[class="btn btn-main py-1"]')
             page.click('button[class="btn btn-main save-log w-100"]')
         else:
-            log.debug("Newly played game")
-            page.wait_for_selector('td[class*="fc-today"][class*="fc-"]')
-            page.click('td[class*="fc-today"][class*="fc-"]')
+            log.debug("Newly played game today")
+            today_cell = page.wait_for_selector('td.fc-today')
+            #today_cell = page.query_selector('//td[contains(@class, "fc-today")]') # xpath version
+            log.debug(today_cell.inner_html())
+            today_cell.click(force=True)
             new_span = page.wait_for_selector('span[class="fc-title"]', state='visible')
             new_span.click()
             minutes_field = page.wait_for_selector('input[id="play_date_minutes"]', state='visible')
