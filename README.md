@@ -9,3 +9,5 @@ There is a provided docker package that builds with each master git commit, you 
 ## To-do
 - Better error handling
 - Optimize multiple user logging on backloggd
+- Try and track non-steam games launched from steam
+    - Automatically add dummy account to friends (using webapi, should be doable)

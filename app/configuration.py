@@ -21,7 +21,12 @@ else:
     #INFO = 20
     #DEBUG = 10
     #NOTSET = 0
-    
+
+if os.getenv("NON_STEAM_CHECKER").lower() == "false":
+    NON_STEAM_CHECKER = False
+elif os.getenv("NON_STEAM_CHECKER").lower() == "true":
+    NON_STEAM_CHECKER = True
+ 
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
     'Accept-Language': 'en-US,en;q=0.9'

@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from steam.webapi import WebAPI
 from backloggd_scrapper import log_game
 from pathlib import Path
-
+from playwright.sync_api import Browser
+from non_steam_game import start_non_steam_check
 from typing import Dict, Union
 import json
 
@@ -209,7 +210,9 @@ def is_playing (api: WebAPI, user:SteamUser, game_name: str):
         return True
     return False
 
-def check_latest_played_games (api:WebAPI, users: Union[SteamUser, list[SteamUser]]):
+def check_latest_played_games (api:WebAPI,
+                               users: Union[SteamUser, list[SteamUser]],
+                               non_steam_browser: Browser = None):
     if isinstance(users, SteamUser):
         users = [users]
     
@@ -269,6 +272,9 @@ def check_latest_played_games (api:WebAPI, users: Union[SteamUser, list[SteamUse
                         has_played = True
                 
         log.info (f"Last game played: {user_db[user.steamid].last_game_played_name}")
+        
+        if non_steam_browser:
+            start_non_steam_check(non_steam_browser, user)
         if has_played:
             if last_playtime_session > 4:
                 log_game(user, user_db[user.steamid].last_game_played,last_playtime_session)

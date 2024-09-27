@@ -14,7 +14,7 @@ services:
       CHANNEL_ID: "discord_channel_id"
       IGDB_CLIENT_ID: "client_id_for_igdb_api"
       IGDB_SECRET: "secret_for_igdb_api"
-      LOGLEVEL: "20" # 20 for normal use, 10 for debu
+      LOGLEVEL: "20" # 20 for normal use, 10 for debug
     volumes:
       - /your/path/db:/app/db
     deploy:
