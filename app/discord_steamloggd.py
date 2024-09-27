@@ -78,7 +78,7 @@ class UpdatesClient(commands.Bot):
         #reviews = rsh.get_reviews(users)
     
           
-def run_discord_bot(api: WebAPI, scheduler: BackgroundScheduler ) -> None:
+async def run_discord_bot(api: WebAPI, scheduler: BackgroundScheduler ) -> None:
     logging.debug(f"Channel ID: {CHANNEL_ID}")
     intents = discord.Intents.default()
     intents.message_content = True
@@ -153,11 +153,9 @@ def run_discord_bot(api: WebAPI, scheduler: BackgroundScheduler ) -> None:
         await interaction.response.send_message("Bot synced!", ephemeral=True)
         log.info (f"Bot synced!") '''
         
-    client.run(DISCORD_TOKEN)
-    
-
-   
-def get_user(api:WebAPI, user_url:str,
+    await client.start(DISCORD_TOKEN)
+     
+async def get_user(api:WebAPI, user_url:str,
              user_api_key:str,
              bl_user: str,
              bl_password: str) -> SteamUser:
@@ -189,6 +187,6 @@ def get_user(api:WebAPI, user_url:str,
                                  bl_user,
                                  bl_password)
 
-    check_latest_played_games(api, steam_user)
+    await check_latest_played_games(api, steam_user)
     return steam_user
     

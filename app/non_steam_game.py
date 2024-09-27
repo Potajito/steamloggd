@@ -32,24 +32,24 @@ else:
 import requests
 from bs4 import BeautifulSoup
 
-def steam_login (page: Page) -> Page:
+async def steam_login (page: Page) -> Page:
     login_url = "https://steamcommunity.com/login/home"
     try:      
         #page = browser.new_page()  # Open a new page
     
             # Navigate to the login page
-        page.goto(login_url)
+        await page.goto(login_url)
         # Fill out the login form using the IDs from the HTML
         # Locate the input field using text selector
-        username_div = page.get_by_text("Sign in with account name")
-        user_input_field = username_div.locator('xpath=following-sibling::input')
-        password_div = page.get_by_text("Password")
-        password_input_field = password_div.locator('xpath=following-sibling::input')
+        username_div: ElementHandle = await page.get_by_text("Sign in with account name")
+        user_input_field:ElementHandle = await username_div.locator('xpath=following-sibling::input')
+        password_div = await page.get_by_text("Password")
+        password_input_field:ElementHandle = await password_div.locator('xpath=following-sibling::input')
         
         # Interact with the input field (e.g., type text)
-        user_input_field.fill(STEAM_USERNAME)
-        password_input_field.fill(STEAM_PASSWORD)
-        page.click('button[type="submit"]')
+        await user_input_field.fill(STEAM_USERNAME)
+        await password_input_field.fill(STEAM_PASSWORD)
+        await page.click('button[type="submit"]')
         #page.wait_for_timeout(3000)
         #page.close()
         return page
@@ -59,16 +59,16 @@ def steam_login (page: Page) -> Page:
         return None
     
 
-def extract_game_name(page: Page, url: str) -> str:
+async def extract_game_name(page: Page, url: str) -> str:
 
     # Send a GET request to the page
     page.goto(url)
 
     # Find the div with class "profile_in_game"
     #profile_ingame: ElementHandle = page.query_selector('div', class_='profile_in_game persona in-game')
-    non_steam_game: ElementHandle = page.query_selector('div.profile_in_game_header')
-    if non_steam_game and non_steam_game.text_content() == 'In non-Steam game': 
-        game_name_div: ElementHandle = page.query_selector('div.profile_in_game_name')
+    non_steam_game: ElementHandle = await page.query_selector('div.profile_in_game_header')
+    if non_steam_game and await non_steam_game.text_content() == 'In non-Steam game': 
+        game_name_div: ElementHandle = await page.query_selector('div.profile_in_game_name')
         game_name = game_name_div.text_content().strip()
         log.info(f"Game name: {game_name}")
         return game_name
@@ -91,10 +91,10 @@ def _start_non_steam_check():
         else:
             log.error("Error logging in Steam")
 
-def start_non_steam_check(page: Page, user: SteamUser):
-        page = steam_login(page)
+async def start_non_steam_check(page: Page, user: SteamUser):
+        page = await steam_login(page)
         if page:
-            non_steam_game_name = extract_game_name(page, user.profileurl)
+            non_steam_game_name = await extract_game_name(page, user.profileurl)
             if isinstance(non_steam_game_name, str):
                 igdb_game_dict = match_non_steam_game_name_to_igdb(non_steam_game_name)
                 log.debug(igdb_game_dict)
