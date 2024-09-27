@@ -1,4 +1,4 @@
-import logging, os, requests, json
+import logging, os, requests, json, difflib
 from apscheduler.schedulers.background import BackgroundScheduler
 from igdb.wrapper import IGDBWrapper
 import re
@@ -93,6 +93,36 @@ def _steam_id_to_backloggd_url(steam_ids: Union[int, list[int]], wrapper: IGDBWr
     for response in responses:
         backloggd_urls.append(f"https://www.backloggd.com/games/{response.get('slug')}")    
     return backloggd_urls
+
+
+def match_non_steam_game_name_to_igdb(game_name: str) -> dict:
+    return _match_non_steam_game_name_to_igdb(wrapper, game_name)
+
+def _match_non_steam_game_name_to_igdb(wrapper: IGDBWrapper, game_name: str) -> dict:
+    igdb_gameids_from_steam = decode_api_response(wrapper.api_request(
+            'games',
+            f'fields name, id, slug; search "{game_name}";'))
+    if igdb_gameids_from_steam:
+        igdb_name:str = igdb_gameids_from_steam[0].get('name')
+        if igdb_name:
+            log.debug(f"Game name for {game_name} at IGDB: {igdb_gameids_from_steam[0].get('name')}")
+            similarity = difflib.SequenceMatcher(None,game_name.lower(),igdb_name.lower()).ratio()
+            log.debug(f"Similarity: {similarity}")
+            log.debug(f"IGDB ID: {igdb_gameids_from_steam[0].get('id')}")
+            if similarity > 0.7:
+                igdb_game = {
+                    'name': igdb_name,
+                    'id': igdb_gameids_from_steam[0].get('id'),
+                    'slug': igdb_gameids_from_steam[0].get('slug')
+                }
+                log.info(f"Found a good match for {game_name} and {igdb_name}")
+                return igdb_game
+            else:
+                log.error(f"Couldn't find a good match for {game_name} and {igdb_name}")
+                return None
+    else:
+        log.error(f"No IGDB ID found for {game_name}")
+        return None
 
 access_token = auth_igdb()  # Run it immediately
 igdb_scheduler_start()
